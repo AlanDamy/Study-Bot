@@ -1,8 +1,35 @@
 require('dotenv').config();
 
-const { REST, ROUTES } = require('discord.js');
+const { REST, ROUTES, Routes } = require('discord.js');
 const deployCommands = async () => {
     //deploy commands
+    try {
+        const commands = [];
+
+        const commandFiles = fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js'));
+
+        for (const file of commandFiles) {
+            const command = require(`./commands/${file}`);
+            if ('data' in command && 'execute' in command) {
+                commands.push(command.data.toJSON());
+        } else {
+                console.log(`[WARNING] The command at ./commands/${file} is missing a required "data" or "execute" property.`);
+            }
+        }    
+
+    const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
+
+    console.log('Started refreshing application (/) commands.');
+
+    const data = await rest.put(
+        Routes.applicationCommands(process.env.CLIENT_ID),
+        { body: commands },
+    );
+
+    console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+    } catch (error) {
+        console.error(error);
+    } 
 
 }
 
@@ -35,7 +62,7 @@ for(const file of commandFiles){
 client.once(Events.ClientReady, async() => {
     console.log(`Logged in as ${client.user.tag}`);
     await deployCommands();
-    comnsole.log('Commands deployed');
+    console.log('Commands deployed');
 
     const statusType = process.env.STATUS_TYPE || 'online';
     const activityType = process.env.ACTIVITY_TYPE || 'Playing';
