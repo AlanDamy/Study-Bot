@@ -5,21 +5,21 @@ module.exports = {
         .setName('add-assignment')
         .setDescription('Adds a new assignment')
         .addStringOption(option => 
-            option.setName('Course')
+            option.setName('course')
                 .setDescription('Course name: ')
                 .setRequired(true))
         .addStringOption(option => 
-            option.setName('Name')
+            option.setName('name')
                 .setDescription('Assignment name: ')
                 .setRequired(true))
         .addStringOption(option => 
-            option.setName('Due_Date')
+            option.setName('due_date')
                 .setDescription('Due date: ')
                 .setRequired(true)),
     async execute(interaction) {
-        const course = interaction.options.getString('Course');
-        const name = interaction.options.getString('Name');
-        const dueDate = interaction.options.getString('Due_Date');
+        const course = interaction.options.getString('course');
+        const name = interaction.options.getString('name');
+        const dueDate = interaction.options.getString('due_date');
 
     if(!global.assignments){
         global.assignments = [];
