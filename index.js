@@ -1,6 +1,7 @@
 require('dotenv').config();
-
-const { REST, ROUTES, Routes } = require('discord.js');
+const fs = require('fs');
+const path = require('path');
+const { REST, Routes } = require('discord.js');
 const deployCommands = async () => {
     //deploy commands
     try {
@@ -43,9 +44,6 @@ const client = new Client({
 });
 
 client.commands = new Collection();
-const fs = require('fs');
-const path = require('path');
-
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
