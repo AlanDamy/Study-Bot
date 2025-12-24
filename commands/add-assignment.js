@@ -1,42 +1,50 @@
-const {SlashCommandBuilder} = require('discord.js');
-const fs = require('fs');
-const path = require('path');
-
-const dataPath = path.join(__dirname, '..', 'data', 'assignments.json');
+const { SlashCommandBuilder } = require('discord.js');
+const db = require('../database'); // SQLite connection
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('add-assignment')
-        .setDescription('Adds a new assignment')
-        .addStringOption(option => 
-            option.setName('course')
-                .setDescription('Course name: ')
-                .setRequired(true))
-        .addStringOption(option => 
-            option.setName('name')
-                .setDescription('Assignment name: ')
-                .setRequired(true))
-        .addStringOption(option => 
-            option.setName('due_date')
-                .setDescription('Due date: ')
-                .setRequired(true)),
-    async execute(interaction) {
-        const course = interaction.options.getString('course');
-        const name = interaction.options.getString('name');
-        const dueDate = interaction.options.getString('due_date');
+  data: new SlashCommandBuilder()
+    .setName('add-assignment')
+    .setDescription('Add a new assignment')
+    .addStringOption(option =>
+      option
+        .setName('name')
+        .setDescription('Assignment name')
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+      option
+        .setName('course')
+        .setDescription('Course name')
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+      option
+        .setName('due')
+        .setDescription('Due date')
+        .setRequired(true)
+    ),
 
-        let assignments = [];
-        if(fs.existsSync(dataPath)){
-            assignments = JSON.parse(fs.readFileSync(dataPath));
+  async execute(interaction) {
+    const name = interaction.options.getString('name');
+    const course = interaction.options.getString('course');
+    const due = interaction.options.getString('due');
+
+    const createdAt = new Date().toISOString();
+
+    db.run(
+      `INSERT INTO assignments (guild_id, course_name, assignment_name, due_date, notes, created_at)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [interaction.guildId, course, name, due, '', createdAt],
+      (err) => {
+        if (err) {
+          console.error(err.message);
+          return interaction.reply({ content: ' Failed to add assignment.', ephemeral: true });
         }
+      }
+    );
 
-        assignments.push({course, name, dueDate,
-            addedBy: interaction.user.username,
-            createdAt: new Date().toISOString()
-        });
-
-        fs.writeFileSync(dataPath, JSON.stringify(assignments, null, 2));
-
-    await interaction.reply(`Assignment "${name}" for course "${course}" due on "${dueDate}" has been added.`);
-    },
+    await interaction.reply(
+      ` Assignment **${name}** for course **${course}** due **${due}** has been saved!`
+    );
+  }
 };
