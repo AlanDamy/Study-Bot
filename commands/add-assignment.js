@@ -1,4 +1,8 @@
 const {SlashCommandBuilder} = require('discord.js');
+const fs = require('fs');
+const path = require('path');
+
+const dataPath = path.join(__dirname, '..', 'data', 'assignments.json');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -21,20 +25,17 @@ module.exports = {
         const name = interaction.options.getString('name');
         const dueDate = interaction.options.getString('due_date');
 
-    if(!global.assignments){
-        global.assignments = [];
-    }
+        let assignments = [];
+        if(fs.existsSync(dataPath)){
+            assignments = JSON.parse(fs.readFileSync(dataPath));
+        }
 
-    const guildId = interaction.guildId;
-    if(!global.assignments[guildId]){
-        global.assignments[guildId] = [];
-    }
+        assignments.push({course, name, dueDate,
+            addedBy: interaction.user.username,
+            createdAt: new Date().toISOString()
+        });
 
-    global.assignments[guildId].push({
-        course: course,
-        name: name,
-        dueDate: dueDate
-    });
+        fs.writeFileSync(dataPath, JSON.stringify(assignments, null, 2));
 
     await interaction.reply(`Assignment "${name}" for course "${course}" due on "${dueDate}" has been added.`);
     },
