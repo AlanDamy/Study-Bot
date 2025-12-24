@@ -23,7 +23,7 @@ const deployCommands = async () => {
     console.log('Started refreshing application (/) commands.');
 
     const data = await rest.put(
-        Routes.applicationCommands(process.env.CLIENT_ID),
+        Routes.applicationCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
         { body: commands },
     );
 
