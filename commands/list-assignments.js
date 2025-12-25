@@ -11,7 +11,7 @@ module.exports = {
 
     // Query assignments for this server
     db.all(
-      `SELECT assignment_name, course_name, due_date, created_at 
+      `SELECT assignment_id, assignment_name, course_name, due_date
        FROM assignments 
        WHERE guild_id = ? 
        ORDER BY created_at ASC`,
