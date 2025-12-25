@@ -4,7 +4,7 @@ const path = require('path');
 const { REST, Routes } = require('discord.js');
 const deployCommands = async () => {
     //deploy commands
-    try {
+    try { 
         const commands = [];
 
         const commandFiles = fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js'));

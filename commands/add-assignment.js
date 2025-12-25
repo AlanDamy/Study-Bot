@@ -6,7 +6,7 @@ module.exports = {
     .setName('add-assignment')
     .setDescription('Add a new assignment')
     .addStringOption(option =>
-      option
+      option 
         .setName('name')
         .setDescription('Assignment name')
         .setRequired(true)
